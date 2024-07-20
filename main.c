@@ -1,31 +1,23 @@
-#include <ncurses.h>
-#include <stdbool.h>
-
-void init();
-void quit();
+#include "game.c"
+#include "menu.c"
 
 int main(void) {
   init();
 
-  int cols = 10;
-  int rows = 20;
+  enum State game_state = GAME;
+
+  while (true) {
+    switch (game_state) {
+    case MENU:
+      menu(&game_state);
+      break;
+    case GAME:
+      game(&game_state);
+      break;
+    case OVER:
+      break;
+    }
+  }
 
   quit();
-  return 0;
-}
-
-void init() {
-  initscr();
-  cbreak();
-  keypad(stdscr, true);
-  clear();
-  refresh();
-}
-
-void quit() {
-  clear();
-  printw("Press any key to exit");
-  refresh();
-  getch();
-  endwin();
 }
