@@ -37,5 +37,6 @@ void game(enum State *game_state) {
   }
 
   delwin(win);
+  delwin(game_win);
   quit();
 }
