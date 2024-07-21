@@ -21,9 +21,22 @@ void game(enum State *game_state) {
 
   print_instructions(win);
 
-  WINDOW *game_win = newwin(22, 22, (LINES - 20) / 2, (COLS - 20) / 2);
+  int game_win_y = (LINES - 22) / 2;
+  int game_win_x = (COLS - 22) / 2;
+  WINDOW *game_win = newwin(22, 22, game_win_y, game_win_x);
   box(game_win, 0, 0);
+  mvwprintw(game_win, 0, 9, "Play");
   wrefresh(game_win);
+
+  WINDOW *hold_win = newwin(4, 12, game_win_y, game_win_x - 12);
+  box(hold_win, 0, 0);
+  mvwprintw(hold_win, 0, 4, "Hold");
+  wrefresh(hold_win);
+
+  WINDOW *next_win = newwin(10, 12, game_win_y, game_win_x + 22);
+  box(next_win, 0, 0);
+  mvwprintw(next_win, 0, 4, "Next");
+  wrefresh(next_win);
 
   bool run = true;
   while (run) {
@@ -38,5 +51,7 @@ void game(enum State *game_state) {
 
   delwin(win);
   delwin(game_win);
+  delwin(hold_win);
+  delwin(next_win);
   quit();
 }

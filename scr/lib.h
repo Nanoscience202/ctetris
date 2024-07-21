@@ -16,6 +16,7 @@ void init() {
   if (COLS < 53) {
     endwin();
     fprintf(stderr, "Window size too small\n");
+    fprintf(stderr, "Current: %i; required: 53\n", COLS);
     exit(1);
   }
 
