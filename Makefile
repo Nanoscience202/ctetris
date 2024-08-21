@@ -10,7 +10,7 @@ FILE?=src/test/test.c
 
 test:
 	mkdir -p bin\
-		&& clang -std=c2x -o scr/test/bin/test `pkgconf --libs --cflags ncurses libcjson` $(FILE) -g \
-		&& ./scr/test/bin/test
+		&& clang -std=c2x -o src/test/bin/test `pkgconf --libs --cflags ncurses libcjson` $(FILE) -g \
+		&& ./src/test/bin/test
 
 
