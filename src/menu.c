@@ -3,8 +3,8 @@
 enum MenuOption { PLAY, QUIT };
 
 void menu_select(WINDOW *win, enum MenuOption opt) {
-  int play_color = opt == PLAY ? 2 : 1;
-  int quit_color = opt == QUIT ? 2 : 1;
+  int play_color = opt == PLAY ? 9 : 8;
+  int quit_color = opt == QUIT ? 9 : 8;
 
   wattron(win, COLOR_PAIR(play_color));
   mvwprintw(win, LINES / 2 - 1, COLS / 2 - 4, "Play");
@@ -43,30 +43,7 @@ void print_menu(WINDOW *win) {
 
   int highscore = 0;
 
-  FILE *file = fopen("data.json", "r");
-
-  if (file != NULL) {
-    fseek(file, 0, SEEK_END);
-    int length = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    char *buff = malloc(length);
-
-    if (buff) {
-      size_t res = fread(buff, 1, length, file);
-      cJSON *json = cJSON_Parse(buff);
-      cJSON *highscore_value =
-          cJSON_GetObjectItemCaseSensitive(json, "highscore");
-
-      if (cJSON_IsNumber(highscore_value)) {
-        highscore = highscore_value->valueint;
-      }
-
-      cJSON_Delete(json);
-    }
-  }
-
-  fclose(file);
+  get_highscore(&highscore);
 
   int n_digits_highscore = highscore == 0 ? 0 : log10(highscore) + 1;
   int highscore_row_size = 11 + n_digits_highscore;
