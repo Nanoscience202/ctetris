@@ -11,7 +11,7 @@ void test_placement(Matrix grid) {
   };
 
   int res = get_placement(grid, b_I);
-  assert_bool(res == 19, "test_placement");
+  assert_bool(res == 19, "placement");
 }
 
 void test_place_block_1(Matrix *grid) {
@@ -32,7 +32,7 @@ void test_place_block_1(Matrix *grid) {
   matrix_set(&ans, 19, 2, 1);
   matrix_set(&ans, 19, 3, 1);
 
-  assert_matrix(test_matrix(*grid, ans, "test_place_block_1"));
+  assert_matrix(test_matrix(*grid, ans, "place_block_1"));
 }
 
 void test_place_block_2() {
@@ -69,7 +69,7 @@ void test_place_block_2() {
       0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
   };
   Matrix ans = matrix_from(20, 10, a);
-  assert_matrix(test_matrix(ans, grid, "test_place_block_2"));
+  assert_matrix(test_matrix(ans, grid, "place_block_2"));
 }
 
 void test_place_block_3(Matrix *grid) {
@@ -96,7 +96,7 @@ void test_place_block_3(Matrix *grid) {
   };
   Matrix ans = matrix_from(20, 10, a);
 
-  Result res = test_matrix(ans, *grid, "test_place_block_3");
+  Result res = test_matrix(ans, *grid, "place_block_3");
   assert_matrix(res);
 }
 
@@ -124,7 +124,7 @@ void test_place_block_above_1(Matrix *grid) {
 
   Matrix ans = matrix_from(20, 10, a);
 
-  Result res = test_matrix(ans, *grid, "test_place_block_above_1");
+  Result res = test_matrix(ans, *grid, "place_block_above_1");
   assert_matrix(res);
 }
 
@@ -153,7 +153,54 @@ void test_place_block_above_2(Matrix *grid) {
   };
 
   Matrix ans = matrix_from(20, 10, a);
-  assert_matrix(test_matrix(*grid, ans, "test_place_block_above_2"));
+  assert_matrix(test_matrix(*grid, ans, "place_block_above_2"));
+}
+
+void test_rotate() {
+  Block b_T = {.color = 1,
+               .type = T,
+               .position = {.x = 1, .y = 1},
+               .shape = block_get_shape(T)};
+
+  Matrix left = matrix_rotate_left(b_T.shape);
+
+  int expected_left[] = {1, 0, 1, 1, 1, 0};
+  assert_matrix(
+      test_matrix(left, matrix_from(3, 2, expected_left), "rotate left"));
+
+  Matrix right = matrix_rotate_right(b_T.shape);
+  int expected_right[] = {0, 1, 1, 1, 0, 1};
+
+  assert_matrix(
+      test_matrix(right, matrix_from(3, 2, expected_right), "rotate right"));
+}
+
+void test_place_block_above_3(Matrix *grid) {
+  Block b_T = {.color = 5,
+               .type = T,
+               .position = {.x = 3 * 2 + 1, .y = 1},
+               .shape = block_get_shape(T)};
+
+  b_T.shape = matrix_rotate_right(b_T.shape);
+
+  int placement = get_placement(*grid, b_T);
+  assert(placement == 17);
+
+  place_block(grid, b_T, placement);
+
+  int a[] = {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 5,
+      0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 2, 0, 4, 4, 0, 1, 1, 1, 1, 5, 2, 2, 2, 4, 4,
+  };
+
+  assert_matrix(
+      test_matrix(*grid, matrix_from(20, 10, a), "rotate right then place"));
 }
 
 int main(void) {
@@ -165,6 +212,8 @@ int main(void) {
   test_place_block_3(&grid);
   test_place_block_above_1(&grid);
   test_place_block_above_2(&grid);
+  test_rotate();
+  test_place_block_above_3(&grid);
 
   matrix_print(grid);
 
