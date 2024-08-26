@@ -1,4 +1,3 @@
-
 #include "game.h"
 
 void print_instructions(WINDOW *win) {
@@ -107,6 +106,18 @@ void game(enum State *game_state) {
         block_wprint(game_win, current);
         wrefresh(game_win);
       }
+      break;
+    case 'z':
+      block_wclear(game_win, current);
+      current.shape = matrix_rotate_left(current.shape);
+      block_wprint(game_win, current);
+      wrefresh(game_win);
+      break;
+    case 'x':
+      block_wclear(game_win, current);
+      current.shape = matrix_rotate_right(current.shape);
+      block_wprint(game_win, current);
+      wrefresh(game_win);
       break;
     }
 

@@ -1,7 +1,7 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "matrix.h"
+#include "matrix/matrix.h"
 #include <ncurses.h>
 #include <stdlib.h>
 

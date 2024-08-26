@@ -34,7 +34,7 @@ void success(char *name) {
   printf("\n");
 }
 
-Result test_matrix(Matrix a, Matrix b, char *name) {
+Result matrix_compare(Matrix a, Matrix b, char *name) {
   if (a.m != b.m || a.n != b.n) {
     char desc[50];
     sprintf(desc, "A has shape %ix%i but B has shape %ix%i", a.n, a.m, b.n,

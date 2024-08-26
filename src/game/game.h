@@ -84,4 +84,24 @@ void place_block(Matrix *grid, Block current, int placement) {
   }
 }
 
+void update_grid(Matrix *grid) {
+  for (int front = 19, back = 19; front >= 0; front--) {
+    bool is_full = true;
+
+    for (int i = 0; i < grid->n; i++) {
+      if (matrix_get(*grid, front, i) == 0) {
+        is_full = false;
+        break;
+      }
+    }
+
+    if (!is_full) {
+      for (int i = 0; i < grid->n; i++) {
+        matrix_set(grid, back, i, matrix_get(*grid, front, i));
+      }
+      back--;
+    }
+  }
+}
+
 #endif
