@@ -102,11 +102,6 @@ Matrix matrix_transpose(Matrix A) {
 Matrix matrix_rotate_left(Matrix A) {
   Matrix R = matrix_new(A.n, A.m);
 
-  /*for (int i = 0; i < R.m; i++) {*/
-  /*  for (int k = 0; k < R.n; k++) {*/
-  /*    matrix_set(&R, i, k, matrix_get(A, k, A.m - i));*/
-  /*  }*/
-  /*}*/
   for (int i = 0; i < A.m; i++) {
     for (int k = 0; k < A.n; k++) {
       matrix_set(&R, A.n - k - 1, i, matrix_get(A, i, k));

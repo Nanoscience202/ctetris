@@ -158,11 +158,13 @@ void test_place_block_above_2(Matrix *grid) {
 
 void test_rotate() {
   int t[] = {I, J, L, O, S, T, Z};
+
   for (int i = 0; i < 7; i++) {
     Matrix M = block_get_shape(t[i]);
     matrix_rotate_right(M);
     matrix_rotate_left(M);
   }
+
   assert_bool(true, "rotate all blocks");
 }
 
