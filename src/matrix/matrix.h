@@ -33,23 +33,21 @@ Matrix matrix_from(int m, int n, int arr[]) {
 
 int matrix_get(Matrix matrix, int row, int column) {
   assert(row < matrix.m && row >= 0);
-
-  assert(column < matrix.n && column >= 0);
+  assert(column < matrix.n);
+  assert(column >= 0);
 
   int i = row * matrix.n + column;
 
   assert(i < matrix.m * matrix.n);
-
-  if (!matrix.M) {
-    exit(1);
-  }
+  assert(matrix.M != NULL);
 
   return matrix.M[i];
 }
 
 void matrix_set(Matrix *matrix, int row, int column, int value) {
   assert(row < matrix->m && row >= 0);
-  assert(column < matrix->n && column >= 0);
+  assert(column < matrix->n);
+  assert(column >= 0);
 
   int i = row * matrix->n + column;
 
@@ -104,9 +102,14 @@ Matrix matrix_transpose(Matrix A) {
 Matrix matrix_rotate_left(Matrix A) {
   Matrix R = matrix_new(A.n, A.m);
 
-  for (int i = 0; i < R.m; i++) {
-    for (int k = 0; k < R.n; k++) {
-      matrix_set(&R, i, k, matrix_get(A, k, A.m - i));
+  /*for (int i = 0; i < R.m; i++) {*/
+  /*  for (int k = 0; k < R.n; k++) {*/
+  /*    matrix_set(&R, i, k, matrix_get(A, k, A.m - i));*/
+  /*  }*/
+  /*}*/
+  for (int i = 0; i < A.m; i++) {
+    for (int k = 0; k < A.n; k++) {
+      matrix_set(&R, A.n - k - 1, i, matrix_get(A, i, k));
     }
   }
 
