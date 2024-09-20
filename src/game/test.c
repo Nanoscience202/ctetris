@@ -458,10 +458,13 @@ void test_update_grid_8() {
   Matrix grid = matrix_from(20, 10, g);
   Matrix ans = matrix_from(20, 10, a);
 
-  update_grid(&grid);
+  int score = update_grid(&grid);
 
   assert_matrix(matrix_compare(grid, ans, "delete 2 in row and in between"));
+  assert(score == 3);
 }
+
+void test_rotate_stuck() {}
 
 int main(void) {
   Matrix grid = matrix_new(20, 10);
