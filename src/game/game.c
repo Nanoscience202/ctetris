@@ -34,6 +34,18 @@ void print_game_win(WINDOW *game_win, Matrix grid) {
   wrefresh(game_win);
 }
 
+int update_board(WINDOW *game_win, WINDOW *next_win, Matrix *grid,
+                 Block *current, Block *queue) {
+  int placement = get_placement(*grid, *current);
+  place_block(grid, *current, placement);
+  int score = update_grid(grid);
+  block_wclear(game_win, *current);
+  print_game_win(game_win, *grid);
+  update_current(next_win, game_win, queue, current);
+
+  return score;
+}
+
 void game(enum State *game_state) {
   WINDOW *win = newwin(0, 0, 0, 0);
   wclear(win);
@@ -63,15 +75,20 @@ void game(enum State *game_state) {
   Block queue[3];
   create_initial_queue(queue);
 
-  int last_color = queue[2].color;
+  int last_color = queue[0].color;
   Block current = block_new(&last_color);
-  current.position.x = (dim_game.width - current.shape.n) / 2;
+  current.shape = block_get_shape(O);
+  current.type = O;
 
   update_next_window(next_win, queue);
 
   bool run = true;
   clock_t now, then;
   now = clock();
+
+  int tick = 3;
+
+  int score = 0;
 
   while (run) {
     int ch = getch();
@@ -81,55 +98,52 @@ void game(enum State *game_state) {
       run = false;
       break;
     case ' ':
-      update_current(next_win, game_win, queue, &current);
+      score += update_board(game_win, next_win, &grid, &current, queue);
       break;
     case KEY_LEFT:
       if (current.position.x > 1) {
-        block_wclear(game_win, current);
-        current.position.x -= 2;
-        block_wprint(game_win, current);
-        wrefresh(game_win);
+        dispatch(game_win, MOVE_LEFT, &current);
       }
       break;
     case KEY_RIGHT:
-      if (current.position.x + current.shape.n < dim_game.width - 4) {
-        block_wclear(game_win, current);
-        current.position.x += 2;
-        block_wprint(game_win, current);
-        wrefresh(game_win);
+      if (current.position.x + current.shape.n * 2 < dim_game.width - 2) {
+        dispatch(game_win, MOVE_RIGHT, &current);
       }
       break;
-    case KEY_DOWN:
-      if (current.position.y + current.shape.m < dim_game.height - 1) {
-        block_wclear(game_win, current);
-        current.position.y++;
-        block_wprint(game_win, current);
-        wrefresh(game_win);
+    case KEY_DOWN: {
+      int placement = get_placement(grid, current);
+
+      if (current.position.y + current.shape.m < dim_game.height - 1 &&
+          current.position.y != placement + 1) {
+        dispatch(game_win, MOVE_DOWN, &current);
       }
       break;
+    }
     case 'z':
-      block_wclear(game_win, current);
-      current.shape = matrix_rotate_left(current.shape);
-      block_wprint(game_win, current);
-      wrefresh(game_win);
+      dispatch(game_win, ROTATE_LEFT, &current);
       break;
     case 'x':
-      block_wclear(game_win, current);
-      current.shape = matrix_rotate_right(current.shape);
-      block_wprint(game_win, current);
-      wrefresh(game_win);
+      dispatch(game_win, ROTATE_RIGHT, &current);
       break;
     }
 
     then = clock();
 
-    if ((then - now) / CLOCKS_PER_SEC >= 1 &&
-        current.position.y + current.shape.m < dim_game.height - 1) {
-      block_wclear(game_win, current);
-      current.position.y++;
-      block_wprint(game_win, current);
-      wrefresh(game_win);
+    if (1 * (then - now) / CLOCKS_PER_SEC >= 1) {
+      int placement = get_placement(grid, current);
 
+      if (current.position.y + current.shape.m < dim_game.height - 1 &&
+          current.position.y != placement + 1) {
+        dispatch(game_win, MOVE_DOWN, &current);
+        tick = 3;
+      } else {
+        if (tick < 0) {
+          score += update_board(game_win, next_win, &grid, &current, queue);
+          tick = 2;
+        } else {
+          tick--;
+        }
+      }
       now = then;
     }
   }
