@@ -10,6 +10,8 @@
 #include <ncurses.h>
 #include <time.h>
 
+enum Action { MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, ROTATE_LEFT, ROTATE_RIGHT };
+
 void create_initial_queue(Block *queue) {
   int last_color = -1;
 
@@ -35,7 +37,7 @@ void update_current(WINDOW *next_win, WINDOW *game_win, Block *queue,
   }
 
   *current = queue[0];
-  current->position.x = (22 - current->shape.n) / 2;
+  current->position.x = 5;
   current->position.y = 1;
 
   queue[0] = queue[1];
@@ -84,8 +86,11 @@ void place_block(Matrix *grid, Block current, int placement) {
   }
 }
 
-void update_grid(Matrix *grid) {
-  for (int front = 19, back = 19; front >= 0; front--) {
+int update_grid(Matrix *grid) {
+  int front = 19;
+  int back = 19;
+
+  for (; front >= 0; front--) {
     bool is_full = true;
 
     for (int i = 0; i < grid->n; i++) {
@@ -102,6 +107,36 @@ void update_grid(Matrix *grid) {
       back--;
     }
   }
+  return back - front;
 }
+
+void dispatch(WINDOW *game_win, enum Action action, Block *current) {
+  block_wclear(game_win, *current);
+
+  switch (action) {
+  case MOVE_RIGHT:
+    current->position.x += 2;
+    break;
+  case MOVE_LEFT:
+    current->position.x -= 2;
+    break;
+  case MOVE_DOWN:
+    current->position.y++;
+    break;
+  case ROTATE_LEFT:
+    current->shape = matrix_rotate_left(current->shape);
+    break;
+  case ROTATE_RIGHT:
+    current->shape = matrix_rotate_right(current->shape);
+    break;
+  }
+
+  block_wprint(game_win, *current);
+  wrefresh(game_win);
+}
+
+void rotate_left(Matrix grid, Block *current) {}
+
+void rotate_right(Matrix grid, Block *current) {}
 
 #endif

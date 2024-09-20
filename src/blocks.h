@@ -4,9 +4,9 @@
 #include "matrix/matrix.h"
 #include <ncurses.h>
 #include <stdlib.h>
+#include <time.h>
 
 enum BlockType { I, J, L, O, S, T, Z };
-enum Direction { DOWN, LEFT, RIGHT };
 
 typedef struct Point {
   int x;
@@ -97,6 +97,7 @@ void block_wclear(WINDOW *win, Block block) {
 }
 
 Block block_new(int *last_color) {
+
   int type = arc4random_uniform(7);
   int color = arc4random_uniform(6) + 1;
 
@@ -122,24 +123,6 @@ Block block_new(int *last_color) {
              .type = type};
 
   return b;
-}
-
-void block_move(Block *block, enum Direction dir) {
-  if (dir == DOWN) {
-    block->position.y++;
-  } else if (dir == LEFT) {
-    if (block->position.x == 0) {
-      return;
-    }
-
-    block->position.x--;
-  } else if (dir == RIGHT) {
-    if (block->position.x + block->shape.n >= 20) {
-      return;
-    }
-
-    block->position.x++;
-  }
 }
 
 #endif
