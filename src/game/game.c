@@ -77,8 +77,7 @@ void game(enum State *game_state) {
 
   int last_color = queue[0].color;
   Block current = block_new(&last_color);
-  current.shape = block_get_shape(O);
-  current.type = O;
+  current.position.x = 5;
 
   update_next_window(next_win, queue);
 
@@ -101,29 +100,25 @@ void game(enum State *game_state) {
       score += update_board(game_win, next_win, &grid, &current, queue);
       break;
     case KEY_LEFT:
-      if (current.position.x > 1) {
-        dispatch(game_win, MOVE_LEFT, &current);
-      }
+      dispatch(game_win, MOVE_LEFT, &current, grid);
       break;
     case KEY_RIGHT:
-      if (current.position.x + current.shape.n * 2 < dim_game.width - 2) {
-        dispatch(game_win, MOVE_RIGHT, &current);
-      }
+      dispatch(game_win, MOVE_RIGHT, &current, grid);
       break;
     case KEY_DOWN: {
       int placement = get_placement(grid, current);
 
       if (current.position.y + current.shape.m < dim_game.height - 1 &&
           current.position.y != placement + 1) {
-        dispatch(game_win, MOVE_DOWN, &current);
+        dispatch(game_win, MOVE_DOWN, &current, grid);
       }
       break;
     }
     case 'z':
-      dispatch(game_win, ROTATE_LEFT, &current);
+      dispatch(game_win, ROTATE_LEFT, &current, grid);
       break;
     case 'x':
-      dispatch(game_win, ROTATE_RIGHT, &current);
+      dispatch(game_win, ROTATE_RIGHT, &current, grid);
       break;
     }
 
@@ -134,7 +129,7 @@ void game(enum State *game_state) {
 
       if (current.position.y + current.shape.m < dim_game.height - 1 &&
           current.position.y != placement + 1) {
-        dispatch(game_win, MOVE_DOWN, &current);
+        dispatch(game_win, MOVE_DOWN, &current, grid);
         tick = 3;
       } else {
         if (tick < 0) {

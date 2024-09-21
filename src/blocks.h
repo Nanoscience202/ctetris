@@ -97,7 +97,6 @@ void block_wclear(WINDOW *win, Block block) {
 }
 
 Block block_new(int *last_color) {
-
   int type = arc4random_uniform(7);
   int color = arc4random_uniform(6) + 1;
 
