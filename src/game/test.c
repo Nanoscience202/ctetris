@@ -71,7 +71,6 @@ void test_place_block_2() {
   Matrix ans = matrix_from(20, 10, a);
   assert_matrix(matrix_compare(ans, grid, "place_block_2"));
 }
-
 void test_place_block_3(Matrix *grid) {
   Block b_J = {
       .color = 2,
@@ -245,7 +244,6 @@ void test_update_grid_1() {
 
   assert_matrix(matrix_compare(grid, ans, "update grid when no win"));
 }
-
 void test_update_grid_2() {
   int g[] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -276,7 +274,6 @@ void test_update_grid_2() {
 
   assert_matrix(matrix_compare(grid, ans, "delete one row"));
 }
-
 void test_update_grid_3() {
   int g[] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -307,7 +304,6 @@ void test_update_grid_3() {
 
   assert_matrix(matrix_compare(grid, ans, "delete two row"));
 }
-
 void test_update_grid_4() {
   int g[] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -368,7 +364,6 @@ void test_update_grid_5() {
 
   assert_matrix(matrix_compare(grid, ans, "delete five row"));
 }
-
 void test_update_grid_6() {
   int g[] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -464,7 +459,102 @@ void test_update_grid_8() {
   assert(score == 3);
 }
 
-void test_rotate_stuck() {}
+void test_block_overlap() {
+  int g[] = {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0, 0, 0, 0, 0, 0, 3, 3,
+      0, 2, 0, 0, 0, 0, 0, 0, 3, 1, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0,
+  };
+
+  int b[] = {1, 1, 1, 0, 1, 0};
+
+  Matrix grid = matrix_from(20, 10, g);
+  Matrix block = matrix_from(2, 3, b);
+
+  assert_bool(is_block_overlap(grid, block, 18, 4) == true, "block_overlap");
+}
+
+void test_can_move_left() {
+  int g[] = {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0,
+      0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
+      3, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0,
+  };
+
+  int b[] = {1, 1, 1, 0, 1, 0};
+
+  Matrix grid = matrix_from(20, 10, g);
+  Block block = {
+      .color = 1,
+      .type = T,
+      .position = {.x = 6 * 2 + 1, .y = 12},
+      .shape = matrix_from(2, 3, b),
+  };
+
+  assert_bool(can_move_left(grid, block) == true, "T block move left 1");
+
+  block.position.y++;
+
+  assert_bool(can_move_left(grid, block) == false, "T block move left 2");
+
+  block.position.y++;
+  assert_bool(can_move_left(grid, block) == false, "T block move left 3");
+
+  block.position.y++;
+  assert_bool(can_move_left(grid, block) == true, "T block move left 4");
+
+  block.position.x -= 2;
+  assert_bool(can_move_left(grid, block) == false, "T block move left 5");
+}
+void test_can_move_right() {
+  int g[] = {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0,
+      0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
+      3, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0,
+  };
+
+  int b[] = {1, 1, 1, 0, 1, 0};
+
+  Matrix grid = matrix_from(20, 10, g);
+  Matrix grid_2 = matrix_from(20, 10, g);
+  Block block = {
+      .color = 1,
+      .type = T,
+      .position = {.x = 3 * 2 + 1, .y = 12},
+      .shape = matrix_from(2, 3, b),
+  };
+
+  assert_bool(can_move_right(grid, block) == true, "T block move right 1");
+
+  block.position.y++;
+  block.position.x -= 2;
+
+  assert_bool(can_move_right(grid, block) == false, "T block move right 2");
+
+  block.position.x -= 2;
+  assert_bool(can_move_right(grid, block) == true, "T block move right 3");
+
+  block.position.y++;
+  assert_bool(can_move_right(grid, block) == false, "T block move right 4");
+
+  block.position.y++;
+  assert_bool(can_move_right(grid, block) == false, "T block move right 5");
+}
 
 int main(void) {
   Matrix grid = matrix_new(20, 10);
@@ -491,4 +581,8 @@ int main(void) {
   test_update_grid_6();
   test_update_grid_7();
   test_update_grid_8();
+
+  test_block_overlap();
+  test_can_move_left();
+  test_can_move_right();
 }
