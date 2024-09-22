@@ -25,18 +25,20 @@ Matrix block_get_shape(enum BlockType type) {
 
   switch (type) {
   case I: {
-    int block[] = {1, 1, 1, 1};
-    R = matrix_from(1, 4, block);
+    int block[] = {
+        0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
+    R = matrix_from(4, 4, block);
     break;
   }
   case J: {
-    int block[] = {1, 0, 0, 1, 1, 1};
-    R = matrix_from(2, 3, block);
+    int block[] = {1, 0, 0, 1, 1, 1, 0, 0, 0};
+    R = matrix_from(3, 3, block);
     break;
   }
   case L: {
-    int block[] = {0, 0, 1, 1, 1, 1};
-    R = matrix_from(2, 3, block);
+    int block[] = {0, 0, 1, 1, 1, 1, 0, 0, 0};
+    R = matrix_from(3, 3, block);
     break;
   }
   case O: {
@@ -45,18 +47,18 @@ Matrix block_get_shape(enum BlockType type) {
     break;
   }
   case S: {
-    int block[] = {0, 1, 1, 1, 1, 0};
-    R = matrix_from(2, 3, block);
+    int block[] = {0, 1, 1, 1, 1, 0, 0, 0, 0};
+    R = matrix_from(3, 3, block);
     break;
   }
   case T: {
-    int block[] = {1, 1, 1, 0, 1, 0};
-    R = matrix_from(2, 3, block);
+    int block[] = {1, 1, 1, 0, 1, 0, 0, 0, 0};
+    R = matrix_from(3, 3, block);
     break;
   }
   case Z: {
-    int block[] = {1, 1, 0, 0, 1, 1};
-    R = matrix_from(2, 3, block);
+    int block[] = {1, 1, 0, 0, 1, 1, 0, 0, 0};
+    R = matrix_from(3, 3, block);
     break;
   }
   }

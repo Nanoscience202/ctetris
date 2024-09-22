@@ -8,7 +8,6 @@
 
 #include <assert.h>
 #include <ncurses.h>
-#include <time.h>
 
 enum Action { MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, ROTATE_LEFT, ROTATE_RIGHT };
 
@@ -57,8 +56,8 @@ void update_current(WINDOW *next_win, WINDOW *game_win, Block *queue,
 bool is_block_overlap(Matrix grid, Matrix shape, int offset_y, int offset_x) {
   for (int i = 0; i < shape.m; i++) {
     for (int k = 0; k < shape.n; k++) {
-      if (matrix_get(grid, i + offset_y, k + offset_x) != 0 &&
-          matrix_get(shape, i, k) == 1) {
+      if (matrix_get(shape, i, k) == 1 &&
+          matrix_get(grid, i + offset_y, k + offset_x) != 0) {
         return true;
       }
     }
@@ -71,7 +70,23 @@ int get_placement(Matrix grid, Block current) {
   int offset_y = current.position.y;
   int offset_x = (current.position.x - 1) / 2;
 
-  for (; offset_y < grid.m - current.shape.m + 1; offset_y++) {
+  int i = current.shape.m - 1;
+  for (; i >= 0; i--) {
+    bool has_square = false;
+
+    for (int k = 0; k < current.shape.n; k++) {
+      if (matrix_get(current.shape, i, k) == 1) {
+        has_square = true;
+        break;
+      }
+    }
+
+    if (!has_square) {
+      break;
+    }
+  }
+
+  for (; offset_y < grid.m - (current.shape.m - i + 1); offset_y++) {
     if (is_block_overlap(grid, current.shape, offset_y, offset_x)) {
       break;
     }
@@ -118,7 +133,21 @@ int update_grid(Matrix *grid) {
   return back - front;
 }
 
-void rotate_left(Matrix grid, Block *current) {}
+void handle_rotate_left(Matrix grid, Block *current) {
+  Matrix standby = matrix_rotate_left(current->shape);
+
+  int offset_y = current->position.y - 1;
+  int offset_x = (current->position.x - 1) / 2;
+
+  if (offset_x + standby.n >= grid.n) {
+    offset_x = grid.n - standby.n;
+  }
+
+  if (!is_block_overlap(grid, standby, offset_y, offset_x)) {
+    current->position.x = offset_x * 2 + 1;
+    current->shape = standby;
+  }
+}
 
 void rotate_right(Matrix grid, Block *current) {}
 
@@ -163,7 +192,7 @@ void dispatch(WINDOW *game_win, enum Action action, Block *current,
     current->position.y++;
     break;
   case ROTATE_LEFT:
-    current->shape = matrix_rotate_left(current->shape);
+    handle_rotate_left(grid, current);
     break;
   case ROTATE_RIGHT:
     current->shape = matrix_rotate_right(current->shape);
