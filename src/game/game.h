@@ -118,10 +118,6 @@ int update_grid(Matrix *grid) {
   return back - front;
 }
 
-void rotate_left(Matrix grid, Block *current) {}
-
-void rotate_right(Matrix grid, Block *current) {}
-
 bool can_move_left(Matrix grid, Block current) {
   if (current.position.x < 2) {
     return false;
@@ -144,6 +140,17 @@ bool can_move_right(Matrix grid, Block current) {
   return !is_block_overlap(grid, current.shape, offset_y, offset_x);
 }
 
+void handle_rotate_left(Matrix grid, Block *current) {
+  Matrix standby = matrix_rotate_left(current->shape);
+
+  int offset_y = current->position.y - 1;
+  int offset_x = (current->position.x - 1) / 2 + current->shape.n / 2 - 1;
+
+  int y_f = current->shape.n / 2 - 1;
+}
+
+void handle_rotate_right(Matrix grid, Block *current) {}
+
 void dispatch(WINDOW *game_win, enum Action action, Block *current,
               Matrix grid) {
   block_wclear(game_win, *current);
@@ -163,10 +170,10 @@ void dispatch(WINDOW *game_win, enum Action action, Block *current,
     current->position.y++;
     break;
   case ROTATE_LEFT:
-    current->shape = matrix_rotate_left(current->shape);
+    handle_rotate_left(grid, current);
     break;
   case ROTATE_RIGHT:
-    current->shape = matrix_rotate_right(current->shape);
+    handle_rotate_right(grid, current);
     break;
   }
 
