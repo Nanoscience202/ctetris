@@ -20,11 +20,34 @@ void create_initial_queue(Block *queue) {
   }
 }
 
-// FIX: queue window block printing
 void update_next_window(WINDOW *next_win, Block queue[]) {
   for (int i = 0; i < 3; i++) {
-    block_wprint(next_win, queue[i]);
+    Matrix block = get_shape(queue[i].type);
+    wattron(next_win, COLOR_PAIR(queue[i].color));
+
+    int offset_x = 2;
+    int offset_y = 0;
+
+    if (queue[i].type == I) {
+      offset_y = 1;
+      offset_x = 1;
+    }
+    if (queue[i].type == O) {
+      offset_x = 3;
+    }
+
+    for (int row = 0; row < block.m; row++) {
+
+      for (int col = 0; col < block.n; col++) {
+        if (matrix_get(block, row, col) == 1) {
+          mvwprintw(next_win, i * 3 + row + 1 + offset_y,
+                    1 + col * 2 + offset_x, "  ");
+        }
+      }
+    }
+    wattroff(next_win, COLOR_PAIR(queue[i].color));
   }
+
   wrefresh(next_win);
 }
 
