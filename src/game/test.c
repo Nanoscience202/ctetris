@@ -3,15 +3,29 @@
 #include <assert.h>
 
 void test_placement(Matrix grid) {
-  Block b_I = {
-      .color = 1,
-      .type = I,
-      .position = {.x = 1, .y = 1},
-      .shape = block_get_shape(I),
-  };
+  enum BlockType shapes[] = {I, J, L, O, S, T, Z};
+  char letters[] = {'I', 'J', 'L', 'O', 'S', 'T', 'Z'};
 
-  int res = get_placement(grid, b_I);
-  assert_bool(res == 19, "placement");
+  for (int i = 0; i < 7; i++) {
+    Block b = {.color = 1,
+               .type = shapes[i],
+               .position = {.x = 1, .y = 1},
+               .shape = block_get_shape(shapes[i])};
+    int placement = get_placement(grid, b);
+
+    char buffer[20];
+    sprintf(buffer, "placement %c", letters[i]);
+
+    char desc[30];
+    sprintf(desc, "Expected %i, Got %i", 18, placement);
+
+    Result res = {.success = placement == 18,
+                  .name = buffer,
+                  .reason = "Wrong placement",
+                  .desc = desc};
+
+    assert_res(res);
+  }
 }
 
 void test_place_block_1(Matrix *grid) {
@@ -22,7 +36,7 @@ void test_place_block_1(Matrix *grid) {
       .shape = block_get_shape(I),
   };
   int res = get_placement(*grid, b_I);
-  assert(res == 19);
+  assert(res == 18);
 
   place_block(grid, b_I, res);
 
@@ -32,9 +46,8 @@ void test_place_block_1(Matrix *grid) {
   matrix_set(&ans, 19, 2, 1);
   matrix_set(&ans, 19, 3, 1);
 
-  assert_matrix(matrix_compare(*grid, ans, "place_block_1"));
+  assert_res(matrix_compare(*grid, ans, "place_block_1"));
 }
-
 void test_place_block_2() {
   int t[] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -69,7 +82,7 @@ void test_place_block_2() {
       0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
   };
   Matrix ans = matrix_from(20, 10, a);
-  assert_matrix(matrix_compare(ans, grid, "place_block_2"));
+  assert_res(matrix_compare(ans, grid, "place_block_2"));
 }
 void test_place_block_3(Matrix *grid) {
   Block b_J = {
@@ -96,16 +109,18 @@ void test_place_block_3(Matrix *grid) {
   Matrix ans = matrix_from(20, 10, a);
 
   Result res = matrix_compare(ans, *grid, "place_block_3");
-  assert_matrix(res);
+  assert_res(res);
 }
 
 void test_place_block_above_1(Matrix *grid) {
   Block b_O = {.color = 3,
                .type = O,
-               .position = {.x = 3, .y = 1},
+               .position = {.x = 1 * 2 + 1, .y = 1},
                .shape = block_get_shape(O)};
 
+  matrix_print(*grid);
   int placement = get_placement(*grid, b_O);
+  printf("%i\n", placement);
   assert(placement == 17);
 
   place_block(grid, b_O, placement);
@@ -124,7 +139,7 @@ void test_place_block_above_1(Matrix *grid) {
   Matrix ans = matrix_from(20, 10, a);
 
   Result res = matrix_compare(ans, *grid, "place_block_above_1");
-  assert_matrix(res);
+  assert_res(res);
 }
 
 void test_place_block_above_2(Matrix *grid) {
@@ -152,7 +167,7 @@ void test_place_block_above_2(Matrix *grid) {
   };
 
   Matrix ans = matrix_from(20, 10, a);
-  assert_matrix(matrix_compare(*grid, ans, "place_block_above_2"));
+  assert_res(matrix_compare(*grid, ans, "place_block_above_2"));
 }
 
 void test_rotate() {
@@ -178,13 +193,13 @@ void test_rotate_block() {
   Matrix left = matrix_rotate_left(b_T.shape);
 
   int expected_left[] = {1, 0, 1, 1, 1, 0};
-  assert_matrix(
+  assert_res(
       matrix_compare(left, matrix_from(3, 2, expected_left), "rotate left"));
 
   Matrix right = matrix_rotate_right(b_T.shape);
   int expected_right[] = {0, 1, 1, 1, 0, 1};
 
-  assert_matrix(
+  assert_res(
       matrix_compare(right, matrix_from(3, 2, expected_right), "rotate right"));
 }
 
@@ -212,7 +227,7 @@ void test_place_block_above_3(Matrix *grid) {
       0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 2, 0, 4, 4, 0, 1, 1, 1, 1, 5, 2, 2, 2, 4, 4,
   };
 
-  assert_matrix(
+  assert_res(
       matrix_compare(*grid, matrix_from(20, 10, a), "rotate right then place"));
 }
 
@@ -242,7 +257,7 @@ void test_update_grid_1() {
   };
   Matrix ans = matrix_from(20, 10, a);
 
-  assert_matrix(matrix_compare(grid, ans, "update grid when no win"));
+  assert_res(matrix_compare(grid, ans, "update grid when no win"));
 }
 void test_update_grid_2() {
   int g[] = {
@@ -272,7 +287,7 @@ void test_update_grid_2() {
 
   update_grid(&grid);
 
-  assert_matrix(matrix_compare(grid, ans, "delete one row"));
+  assert_res(matrix_compare(grid, ans, "delete one row"));
 }
 void test_update_grid_3() {
   int g[] = {
@@ -302,7 +317,7 @@ void test_update_grid_3() {
 
   update_grid(&grid);
 
-  assert_matrix(matrix_compare(grid, ans, "delete two row"));
+  assert_res(matrix_compare(grid, ans, "delete two row"));
 }
 void test_update_grid_4() {
   int g[] = {
@@ -332,7 +347,7 @@ void test_update_grid_4() {
 
   update_grid(&grid);
 
-  assert_matrix(matrix_compare(grid, ans, "delete five row"));
+  assert_res(matrix_compare(grid, ans, "delete five row"));
 }
 void test_update_grid_5() {
   int g[] = {
@@ -362,7 +377,7 @@ void test_update_grid_5() {
 
   update_grid(&grid);
 
-  assert_matrix(matrix_compare(grid, ans, "delete five row"));
+  assert_res(matrix_compare(grid, ans, "delete five row"));
 }
 void test_update_grid_6() {
   int g[] = {
@@ -394,7 +409,7 @@ void test_update_grid_6() {
 
   update_grid(&grid);
 
-  assert_matrix(matrix_compare(grid, ans, "delete in between row"));
+  assert_res(matrix_compare(grid, ans, "delete in between row"));
 }
 void test_update_grid_7() {
   int g[] = {
@@ -425,7 +440,7 @@ void test_update_grid_7() {
 
   update_grid(&grid);
 
-  assert_matrix(matrix_compare(grid, ans, "delete two in between row"));
+  assert_res(matrix_compare(grid, ans, "delete two in between row"));
 }
 void test_update_grid_8() {
   int g[] = {
@@ -455,7 +470,7 @@ void test_update_grid_8() {
 
   int score = update_grid(&grid);
 
-  assert_matrix(matrix_compare(grid, ans, "delete 2 in row and in between"));
+  assert_res(matrix_compare(grid, ans, "delete 2 in row and in between"));
   assert(score == 3);
 }
 

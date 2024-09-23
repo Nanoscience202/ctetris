@@ -20,6 +20,7 @@ void create_initial_queue(Block *queue) {
   }
 }
 
+// FIX: queue window block printing
 void update_next_window(WINDOW *next_win, Block queue[]) {
   for (int i = 0; i < 3; i++) {
     block_wprint(next_win, queue[i]);
@@ -71,7 +72,7 @@ int get_placement(Matrix grid, Block current) {
   int offset_x = (current.position.x - 1) / 2;
 
   int i = current.shape.m - 1;
-  for (; i >= 0; i--) {
+  for (; i > 0; i--) {
     bool has_square = false;
 
     for (int k = 0; k < current.shape.n; k++) {
@@ -86,19 +87,18 @@ int get_placement(Matrix grid, Block current) {
     }
   }
 
-  for (; offset_y < grid.m - (current.shape.m - i + 1); offset_y++) {
+  for (; offset_y < grid.m - (current.shape.m - i); offset_y++) {
     if (is_block_overlap(grid, current.shape, offset_y, offset_x)) {
       break;
     }
   }
+
   return offset_y - 1;
 }
 
 void place_block(Matrix *grid, Block current, int placement) {
   int offset_y = placement;
   int offset_x = (current.position.x - 1) / 2;
-
-  assert(placement <= grid->m - current.shape.m);
 
   for (int i = 0; i < current.shape.m; i++) {
     for (int k = 0; k < current.shape.n; k++) {
@@ -173,6 +173,7 @@ bool can_move_right(Matrix grid, Block current) {
   return !is_block_overlap(grid, current.shape, offset_y, offset_x);
 }
 
+// FIX:block printing
 void dispatch(WINDOW *game_win, enum Action action, Block *current,
               Matrix grid) {
   block_wclear(game_win, *current);

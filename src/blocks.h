@@ -25,9 +25,7 @@ Matrix block_get_shape(enum BlockType type) {
 
   switch (type) {
   case I: {
-    int block[] = {
-        0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-    };
+    int block[] = {0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
     R = matrix_from(4, 4, block);
     break;
   }
@@ -42,7 +40,7 @@ Matrix block_get_shape(enum BlockType type) {
     break;
   }
   case O: {
-    int block[] = {1, 1, 1, 1};
+    int block[] = {0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0};
     R = matrix_from(2, 2, block);
     break;
   }
